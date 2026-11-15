@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ひっ算トレーナー テスト</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 16px; background: #fff; color: #222; }
+    .ok { color: #1a7f37; } .ng { color: #c62828; font-weight: bold; }
+    li { margin: 4px 0; } pre { white-space: pre-wrap; margin: 2px 0 0 1em; color: #c62828; }
+  </style>
+</head>
+<body>
+  <h1>ロジックのテスト</h1>
+  <p id="summary">実行中…</p>
+  <ul id="list"></ul>
+  <script type="module">
+    import { run } from './all.js';
+    const results = await run();
+    const list = document.getElementById('list');
+    for (const r of results) {
+      const li = document.createElement('li');
+      li.className = r.pass ? 'ok' : 'ng';
+      li.textContent = `${r.pass ? '○' : '×'} ${r.name}`;
+      if (!r.pass) { const pre = document.createElement('pre'); pre.textContent = r.error; li.append(pre); }
+      list.append(li);
+    }
+    const ng = results.filter((r) => !r.pass).length;
+    document.getElementById('summary').textContent = `${results.length - ng} / ${results.length} 件 合格`;
+    document.getElementById('summary').className = ng ? 'ng' : 'ok';
+  </script>
+</body>
+</html>

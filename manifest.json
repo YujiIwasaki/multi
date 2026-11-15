@@ -1,0 +1,17 @@
+{
+  "name": "かけ算ひっ算トレーナー",
+  "short_name": "ひっ算",
+  "description": "2けた・3けたの かけ算の ひっ算を 1マスずつ れんしゅう する アプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#F5F8FC",
+  "theme_color": "#2B6CB0",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

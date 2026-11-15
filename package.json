@@ -1,0 +1,9 @@
+{
+  "name": "hissan-trainer",
+  "private": true,
+  "type": "module",
+  "description": "かけ算ひっ算トレーナー（ビルド不要。このファイルは Node.js でテストを実行するためだけのもの）",
+  "scripts": {
+    "test": "node tests/run-node.mjs"
+  }
+}
