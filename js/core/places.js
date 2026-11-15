@@ -12,17 +12,6 @@ export function digitsOf(n) {
   return [...String(n)].reverse().map(Number);
 }
 
-/** 末尾の0を取り除く。例 450 → { core: 45, tz: 1 } */
-export function stripTrailingZeros(n) {
-  let core = n;
-  let tz = 0;
-  while (core > 0 && core % 10 === 0) {
-    core /= 10;
-    tz += 1;
-  }
-  return { core, tz };
-}
-
 /** lo以上 hi以下の整数の乱数（rng は 0以上1未満を返す関数） */
 export function randInt(lo, hi, rng = Math.random) {
   return lo + Math.floor(rng() * (hi - lo + 1));

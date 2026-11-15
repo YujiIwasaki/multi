@@ -4,7 +4,7 @@ import { placeName } from './places.js';
 
 /** 掛ける数の桁 j の呼び名。例「十の位の 3」 */
 function bLabel(meta, j) {
-  return `${placeName(j + meta.tzB)}の位の ${meta.bDigits[j]}`;
+  return `${placeName(j)}の位の ${meta.bDigits[j]}`;
 }
 
 /**
@@ -72,19 +72,17 @@ export function hintFor(step, level, layout) {
       return { text: `${s.value} の 十の位の ${Math.floor(s.value / 10)} を くり上げるよ`, reveal, targets: [`col:${s.col}`] };
     }
     case 'zeroTail': {
-      if (level === 1) return { text: 'よけておいた 0 を 下ろそう', reveal, targets: zeroTargets(meta) };
-      return { text: `0 を ${meta.tz}こ つけるよ`, reveal, targets: zeroTargets(meta) };
+      if (level === 1) return { text: 'かける数の 右の 数字を 見てみよう', reveal, targets: zeroTargets(meta) };
+      return { text: `かける数の ${placeName(s.col)}の位が 0 だから、答えの ${placeName(s.col)}の位も 0 だよ`, reveal, targets: zeroTargets(meta) };
     }
     default:
       return { text: '', reveal, targets: [] };
   }
 }
 
+/** 掛ける数の右に続く0（答えの右に0を書く理由）を指す */
 function zeroTargets(meta) {
-  const t = [];
-  for (let k = 0; k < meta.tzA; k += 1) t.push(`az:${k}`);
-  for (let k = 0; k < meta.tzB; k += 1) t.push(`bz:${k}`);
-  return t;
+  return Array.from({ length: meta.lead }, (_, j) => `b:${j}`);
 }
 
 /**
@@ -97,12 +95,11 @@ export function explain(code, d, layout) {
 
   switch (code) {
     case 'E4': {
-      const realPlace = d.j + meta.tzB;
       return {
         code, title: '書きはじめる 位が ずれているよ',
         lines: [
           `${rowName(d.row)}は ${bLabel(meta, d.j)} を かけているよ`,
-          `${d.bj}${'0'.repeat(realPlace)} を かけるのと おなじ だから、${d.bj} の 真下から 書きはじめるんだ`,
+          `${d.bj}${'0'.repeat(d.j)} を かけるのと おなじ だから、${d.bj} の 真下から 書きはじめるんだ`,
         ],
         visuals: [{ type: 'link', targets: [`b:${d.j}`, `slot:${d.startCol}`] }],
       };
@@ -142,11 +139,10 @@ export function explain(code, d, layout) {
     }
     case 'Z4':
       return {
-        code, title: '0の かずを たしかめよう',
-        lines: [
-          `${d.aCore} × ${d.bCore} を けいさん してから、よけた 0 を ${d.tz}こ つけるよ`,
-          `かけられる数に ${d.tzA}こ、かける数に ${d.tzB}こ で あわせて ${d.tz}こ`,
-        ],
+        code, title: 'さいごの 0を わすれずに',
+        lines: d.lead === 1
+          ? ['かける数の 一の位が 0 だから、0の だんは とばしたね', 'そのかわり、答えの 一の位には 0 を 書くんだ']
+          : [`かける数の 右に 0 が ${d.lead}こ あるから、答えの 右にも 0 を ${d.lead}こ 書くんだ`],
         visuals: [{ type: 'highlight', targets: zeroTargets(meta) }],
       };
     case 'E1':

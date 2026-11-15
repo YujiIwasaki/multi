@@ -1,7 +1,7 @@
 import { test, eq, ok } from './runner.js';
 import { buildLayout, assembleAnswer } from '../js/core/layout.js';
 
-const CASES = [[47, 36], [258, 47], [386, 274], [305, 8], [305, 208], [386, 204], [47, 30], [450, 30], [320, 150], [23, 12], [999, 999], [100, 100], [10, 10], [5, 5]];
+const CASES = [[47, 36], [258, 47], [386, 274], [305, 8], [305, 208], [386, 204], [47, 30], [450, 30], [320, 150], [386, 240], [23, 12], [999, 999], [100, 100], [10, 10], [5, 5]];
 
 test('layout: マスから組み立てた答えが a×b と一致する', () => {
   for (const [a, b] of CASES) {
@@ -44,12 +44,28 @@ test('layout: 386×204 の答えは 78744', () => {
   eq(assembleAnswer(buildLayout(386, 204)), 78744);
 });
 
-test('layout: 450×30 は tz=2、45×3 の段と 0 を2こ下ろすマス', () => {
+test('layout: 450×30 は数をずらさず、0の段を省いて 450×3 を十の位から書き、一の位に0', () => {
   const l = buildLayout(450, 30);
-  eq(l.meta.tz, 2);
-  eq(l.meta.rows.map((r) => [r.startCol, r.value]), [[2, 135]]);
-  eq(l.cells.filter((c) => c.kind === 'zeroTail').map((c) => c.col), [0, 1]);
+  eq(l.meta.aCells.map((d) => [d.col, d.digit]), [[0, 0], [1, 5], [2, 4]]);
+  eq(l.meta.bCells.map((d) => [d.col, d.digit]), [[0, 0], [1, 3]]);
+  eq(l.meta.rows.map((r) => [r.startCol, r.value]), [[1, 1350]]);
+  eq(l.cells.filter((c) => c.kind === 'partial').map((c) => [c.col, c.expected]), [[1, 0], [2, 5], [3, 3], [4, 1]]);
+  eq(l.cells.filter((c) => c.kind === 'zeroTail').map((c) => c.col), [0]);
   ok(!l.meta.hasSum, '段が1つなので足し算はない');
+});
+
+test('layout: 47×30 は「かける数字」「書きはじめの位」を聞き、141 を十の位から書いて一の位に0', () => {
+  const l = buildLayout(47, 30, { carryInput: false });
+  eq(l.steps.map((s) => s.type === 'cell' ? l.cellById.get(s.cellId).expected : s.type),
+    ['chooseDigit', 'chooseStartCol', 1, 4, 1, 0]);
+});
+
+test('layout: 386×240 は 4の段（十の位から）と 2の段（百の位から）、足し算は十の位から、一の位に0', () => {
+  const l = buildLayout(386, 240, { carryInput: false });
+  eq(l.meta.rows.map((r) => [r.j, r.startCol]), [[1, 1], [2, 2]]);
+  eq(Math.min(...l.cells.filter((c) => c.kind === 'sum').map((c) => c.col)), 1);
+  eq(l.cells.filter((c) => c.kind === 'zeroTail').map((c) => c.col), [0]);
+  eq(assembleAnswer(l), 92640);
 });
 
 test('layout: 1けたの掛ける数では「かける数字」を聞かない', () => {

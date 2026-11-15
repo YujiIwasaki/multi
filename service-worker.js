@@ -1,7 +1,7 @@
 // オフライン用キャッシュ（設計書 10.3）
 // ★ アプリのファイルを直したら、CACHE の数字を必ず上げてから GitHub に上げること。
 //   上げ忘れると iPad で古い版が表示され続けます。
-const CACHE = 'hissan-v2';
+const CACHE = 'hissan-v3';
 
 const ASSETS = [
   './',

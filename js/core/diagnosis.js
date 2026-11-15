@@ -33,7 +33,7 @@ export function diagnose(step, input, layout) {
     return { code: 'E6', detail: { cell, ...cell.src } };
   }
   if (cell.kind === 'zeroTail') {
-    return { code: 'Z4', detail: { cell, tz: meta.tz, aCore: meta.aCore, bCore: meta.bCore, tzA: meta.tzA, tzB: meta.tzB } };
+    return { code: 'Z4', detail: { cell, lead: meta.lead } };
   }
 
   const { i, j, ai, bj, carryIn: c, value: v } = cell.src;

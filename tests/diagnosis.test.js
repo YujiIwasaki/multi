@@ -53,9 +53,20 @@ test('diagnosis: 47×36 段0 十の位に 0（4×(6+4)）→ E3', () => {
   eq(diagnose(cellStep(l, 'partial', 0, 1), 0, l).code, 'E3');
 });
 
-test('diagnosis: 450×30 の 0 を下ろすマスに 5 → Z4', () => {
+test('diagnosis: 450×30 の 答えの一の位（0を書くマス）に 5 → Z4', () => {
   const l = buildLayout(450, 30);
   eq(diagnose(cellStep(l, 'zeroTail', 0, 0), 5, l).code, 'Z4');
+});
+
+test('diagnosis: 47×30 で 3 の段を一の位から書こうとする → Z3（0の段を省いたのにずらしていない）', () => {
+  const l = buildLayout(47, 30);
+  const step = l.steps.find((s) => s.type === 'chooseStartCol');
+  eq(diagnose(step, 0, l).code, 'Z3');
+});
+
+test('diagnosis: 450×30 の 0×3 のマスに 3 → Z1', () => {
+  const l = buildLayout(450, 30);
+  eq(diagnose(cellStep(l, 'partial', 0, 1), 3, l).code, 'Z1');
 });
 
 test('diagnosis: 47×36 段1 一の位に 2（7×6 の一の位）→ E5', () => {

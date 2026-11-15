@@ -50,9 +50,7 @@ export function renderGrid(layout, v) {
 
   // 2. 掛けられる数
   lines.push(line('line-num', meta.aCells.map((d) => h('div', {
-    class: `num${d.zero !== undefined ? ' num-zero' : ''}`,
-    style: gc(d.col),
-    'data-t': d.zero !== undefined ? `az:${d.zero}` : `a:${d.i}`,
+    class: 'num', style: gc(d.col), 'data-t': `a:${d.i}`,
   }, String(d.digit)))));
 
   // 3. ×と掛ける数（「かける数字をえらぶ」ときはボタンになる）
@@ -60,17 +58,16 @@ export function renderGrid(layout, v) {
   lines.push(line('line-num', [
     h('div', { class: 'num sign', style: { gridColumn: '1' } }, '×'),
     ...meta.bCells.map((d) => {
-      const isCore = d.j !== undefined;
-      const names = isCore ? `b:${d.j}` : `bz:${d.zero}`;
-      const isWrong = v.wrong && v.wrong.digit === d.j && isCore;
-      if (picking && isCore) {
+      const names = `b:${d.j}`;
+      const isWrong = v.wrong && v.wrong.digit === d.j;
+      if (picking) {
         return h('button', {
           class: `num pick${isWrong ? ' is-wrong' : ''}`, type: 'button', style: gc(d.col), 'data-t': names,
           'aria-label': `${d.digit} を えらぶ`,
           onpointerdown: (e) => { e.preventDefault(); v.onPickDigit(d.j); },
         }, String(d.digit));
       }
-      return h('div', { class: `num${isCore ? '' : ' num-zero'}`, style: gc(d.col), 'data-t': names }, String(d.digit));
+      return h('div', { class: 'num', style: gc(d.col), 'data-t': names }, String(d.digit));
     }),
   ]));
 
@@ -79,7 +76,7 @@ export function renderGrid(layout, v) {
   // 4. 部分積の段（0の段は点線で「とばす」と表示）
   meta.bDigits.forEach((bj, j) => {
     if (bj === 0) {
-      if (meta.rows.length >= 2 && v.showZeroGuide) {
+      if (v.showZeroGuide) {
         lines.push(line('line-ghost', h('div', { class: 'ghost-label', style: { gridColumn: `1 / span ${cols}` } }, '0の だんは とばす'), { 'data-t': `ghost:${j}` }));
       }
       return;
@@ -97,7 +94,8 @@ export function renderGrid(layout, v) {
       }
     } else if (v.startedRows.has(r.row)) {
       if (v.guideRows.has(r.row) && v.showZeroGuide) {
-        for (let col = meta.tz; col < r.startCol; col += 1) {
+        // 段が1つのときは、右の位に「0を書く」マスが同じ行に来るので、そこには薄い0を出さない
+        for (let col = meta.hasSum ? 0 : meta.lead; col < r.startCol; col += 1) {
           children.push(h('div', { class: 'guide', style: gc(col), 'data-t': `slot:${col}` }, '0'));
         }
       }
